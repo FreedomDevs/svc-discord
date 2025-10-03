@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"svc-discord/config"
 	"svc-discord/utils"
 	"syscall"
 
@@ -12,9 +13,9 @@ import (
 
 func main() {
 	log.Println("Запуск svc-discord..")
-	token := "Bot " + getEnv("DISCORD_BOT_TOKEN", "nil")
+	config.LoadEnvVars()
 
-	dg, err := discordgo.New(token)
+	dg, err := discordgo.New(config.GetDiscordBotToken())
 	if err != nil {
 		log.Fatalln("Неверный токен:", err)
 	}
@@ -34,12 +35,10 @@ func main() {
 	}
 	log.Println("Bot is running... Press CTRL+C to exit.")
 
-	guildID := getEnv("GUILD_ID", "1157195772115292252")
-
 	utils.ClearAllCommands(dg)
 
 	// Регистрация команд
-	_, err = dg.ApplicationCommandCreate(dg.State.User.ID, guildID, &discordgo.ApplicationCommand{
+	_, err = dg.ApplicationCommandCreate(dg.State.User.ID, config.GetGuildID(), &discordgo.ApplicationCommand{
 		Name:        "warn",
 		Description: "Give a warn to a user",
 		Options: []*discordgo.ApplicationCommandOption{
@@ -55,7 +54,7 @@ func main() {
 		log.Fatalln("Cannot create slash command:", err)
 	}
 
-	_, err = dg.ApplicationCommandCreate(dg.State.User.ID, guildID, &discordgo.ApplicationCommand{
+	_, err = dg.ApplicationCommandCreate(dg.State.User.ID, config.GetGuildID(), &discordgo.ApplicationCommand{
 		Name:        "removewarn",
 		Description: "Remove a warn from a user",
 		Options: []*discordgo.ApplicationCommandOption{

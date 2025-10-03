@@ -4,26 +4,15 @@ import (
 	"fmt"
 	"log"
 	"slices"
-	"strings"
+	"svc-discord/config"
 	"svc-discord/utils"
 
 	"github.com/bwmarrin/discordgo"
 )
 
-var warnLevels []string
-var warnAccessRoles []string
-
-func init() {
-	exampleWarnLevels := "1391167522446774272,1391168547538866217,1391168616271056957"
-	warnLevels = strings.Split(getEnv("WARN_LEVELS", exampleWarnLevels), ",")
-
-	exampleAccessRoles := "1274669048902193186,1391097009032794183,1274668939519070259,1274669011384143873"
-	warnAccessRoles = strings.Split(getEnv("WARN_ACCESS_ROLES", exampleAccessRoles), ",")
-}
-
 func HasAccessToWarn(member *discordgo.Member) bool {
 	for _, r := range member.Roles {
-		if slices.Contains(warnAccessRoles, r) {
+		if slices.Contains(config.GetWarnAccessRoles(), r) {
 			return true
 		}
 	}
@@ -31,6 +20,8 @@ func HasAccessToWarn(member *discordgo.Member) bool {
 }
 
 func GetCurrentWarnLevel(member *discordgo.Member) int {
+	warnLevels := config.GetWarnLevels()
+
 	for i := len(warnLevels) - 1; i >= 0; i-- { // идём с конца
 		if slices.Contains(member.Roles, warnLevels[i]) {
 			return i + 1
@@ -40,6 +31,7 @@ func GetCurrentWarnLevel(member *discordgo.Member) int {
 }
 
 func GiveWarn(target *discordgo.Member, guild *discordgo.Guild, session *discordgo.Session) string {
+	warnLevels := config.GetWarnLevels()
 	currentWarnLevel := GetCurrentWarnLevel(target)
 
 	index := currentWarnLevel - 1
@@ -70,6 +62,7 @@ func GiveWarn(target *discordgo.Member, guild *discordgo.Guild, session *discord
 }
 
 func RemoveWarn(target *discordgo.Member, guild *discordgo.Guild, session *discordgo.Session) string {
+	warnLevels := config.GetWarnLevels()
 	currentWarnLevel := GetCurrentWarnLevel(target)
 
 	index := currentWarnLevel - 1
