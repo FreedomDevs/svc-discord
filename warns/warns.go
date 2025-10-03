@@ -1,4 +1,4 @@
-package main
+package warns
 
 import (
 	"fmt"
@@ -41,7 +41,7 @@ func GiveWarn(target *discordgo.Member, guild *discordgo.Guild, session *discord
 
 	roleToAdd := utils.GetRoleByID(guild, warnLevels[index+1])
 	if roleToAdd == nil {
-		return "⚠️ Роль с ID $nextWarnRoleId не найдена"
+		return fmt.Sprintf("⚠️ Роль с ID %s не найдена", warnLevels[index-1])
 	}
 
 	if index >= 0 {
@@ -82,7 +82,7 @@ func RemoveWarn(target *discordgo.Member, guild *discordgo.Guild, session *disco
 
 	roleToAdd := utils.GetRoleByID(guild, warnLevels[index-1])
 	if roleToAdd == nil {
-		return "⚠️ Роль с ID $nextWarnRoleId не найдена"
+		return fmt.Sprintf("⚠️ Роль с ID %s не найдена", warnLevels[index-1])
 	}
 
 	err = session.GuildMemberRoleAdd(guild.ID, target.User.ID, roleToAdd.ID)

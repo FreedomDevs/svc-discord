@@ -1,10 +1,16 @@
-package main
+package warns
 
 import (
+	"slices"
+
 	"github.com/bwmarrin/discordgo"
 )
 
 func onInteractionCreate(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	if !slices.Contains([]string{"warn", "removewarn"}, i.ApplicationCommandData().Name) {
+		return
+	}
+
 	if i.Type != discordgo.InteractionApplicationCommand {
 		return
 	}
