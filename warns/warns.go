@@ -1,10 +1,10 @@
 package warns
 
 import (
-	"fmt"
 	"log"
 	"slices"
 	"svc-discord/config"
+	"svc-discord/errdefs"
 	"svc-discord/utils"
 
 	"github.com/bwmarrin/discordgo"
@@ -30,18 +30,18 @@ func GetCurrentWarnLevel(member *discordgo.Member) int {
 	return 0
 }
 
-func GiveWarn(target *discordgo.Member, guild *discordgo.Guild, session *discordgo.Session) string {
+func GiveWarn(target *discordgo.Member, guild *discordgo.Guild, session *discordgo.Session) (string, error) {
 	warnLevels := config.GetWarnLevels()
 	currentWarnLevel := GetCurrentWarnLevel(target)
 
 	index := currentWarnLevel - 1
 	if index+1 >= len(warnLevels) {
-		return fmt.Sprintf("❗ %s уже получил максимальное количество предупреждений", target.DisplayName())
+		return "", errdefs.ErrMaxWarningsReached
 	}
 
 	roleToAdd := utils.GetRoleByID(guild, warnLevels[index+1])
 	if roleToAdd == nil {
-		return fmt.Sprintf("⚠️ Роль с ID %s не найдена", warnLevels[index-1])
+		return "", &errdefs.RoleNotFoundError{RoleID: warnLevels[index-1]}
 	}
 
 	if index >= 0 {
@@ -55,19 +55,32 @@ func GiveWarn(target *discordgo.Member, guild *discordgo.Guild, session *discord
 	err := session.GuildMemberRoleAdd(guild.ID, target.User.ID, roleToAdd.ID)
 	if err != nil {
 		log.Println("Ошибка при добавлении роли:", err)
-		return "Ошибка при добавлении роли"
+		return "", errdefs.ErrRoleAddFailed
 	}
 
-	return fmt.Sprintf("✅%s получил предупреждение: %s", target.DisplayName(), roleToAdd.Name)
+	return roleToAdd.Name, nil
 }
 
-func RemoveWarn(target *discordgo.Member, guild *discordgo.Guild, session *discordgo.Session) string {
+type WarnResult int
+
+const (
+	WarnNone WarnResult = iota
+	WarnRemoved
+	WarnDecreased
+)
+
+type RemoveWarnResult struct {
+	Status WarnResult
+	Role   string
+}
+
+func RemoveWarn(target *discordgo.Member, guild *discordgo.Guild, session *discordgo.Session) (*RemoveWarnResult, error) {
 	warnLevels := config.GetWarnLevels()
 	currentWarnLevel := GetCurrentWarnLevel(target)
 
 	index := currentWarnLevel - 1
 	if index < 0 {
-		return fmt.Sprintf("ℹ️ У %s нет предупреждений", target.DisplayName())
+		return nil, errdefs.ErrNoWarnsToRemove
 	}
 
 	roleToRemove := utils.GetRoleByID(guild, warnLevels[index])
@@ -77,19 +90,19 @@ func RemoveWarn(target *discordgo.Member, guild *discordgo.Guild, session *disco
 	}
 
 	if index-1 < 0 {
-		return fmt.Sprintf("✅ %s: все предупреждения сняты (удалена роль %s)", target.DisplayName(), roleToRemove.Name)
+		return &RemoveWarnResult{Role: roleToRemove.Name, Status: WarnRemoved}, nil
 	}
 
 	roleToAdd := utils.GetRoleByID(guild, warnLevels[index-1])
 	if roleToAdd == nil {
-		return fmt.Sprintf("⚠️ Роль с ID %s не найдена", warnLevels[index-1])
+		return nil, &errdefs.RoleNotFoundError{RoleID: warnLevels[index-1]}
 	}
 
 	err = session.GuildMemberRoleAdd(guild.ID, target.User.ID, roleToAdd.ID)
 	if err != nil {
 		log.Println("Ошибка при добавлении роли:", err)
-		return "Ошибка при добавлении роли"
+		return nil, errdefs.ErrRoleAddFailed
 	}
 
-	return fmt.Sprintf("✅ %s: уровень предупреждения снижен до %s", target.DisplayName(), roleToAdd.Name)
+	return &RemoveWarnResult{Role: roleToAdd.Name, Status: WarnDecreased}, nil
 }

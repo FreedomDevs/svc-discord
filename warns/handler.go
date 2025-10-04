@@ -1,7 +1,11 @@
 package warns
 
 import (
+	"errors"
+	"fmt"
+	"log"
 	"slices"
+	"svc-discord/errdefs"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -72,11 +76,43 @@ func onInteractionCreate(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	var result string
 	switch i.ApplicationCommandData().Name {
 	case "warn":
-		result = GiveWarn(target, guild, s)
+		roleToAdd, err := GiveWarn(target, guild, s)
+		switch err {
+		case errdefs.ErrMaxWarningsReached:
+			result = fmt.Sprintf("❗ %s уже получил максимальное количество предупреждений", target.DisplayName())
+		case errdefs.ErrRoleNotFound:
+			var rnf *errdefs.RoleNotFoundError
+			errors.As(err, &rnf)
+			result = fmt.Sprintf("⚠️ Роль с ID %s не найдена", rnf.RoleID)
+		case errdefs.ErrRoleAddFailed:
+			result = "❗Ошибка при добавлении роли, подробнее в логах"
+		case nil:
+			result = fmt.Sprintf("✅%s получил предупреждение: %s", target.DisplayName(), roleToAdd)
+		}
 	case "removewarn":
-		result = RemoveWarn(target, guild, s)
-	default:
-		result = "Unknown command."
+		removeWarnResult, err := RemoveWarn(target, guild, s)
+		switch err {
+		case errdefs.ErrRoleNotFound:
+			var rnf *errdefs.RoleNotFoundError
+			errors.As(err, &rnf)
+			result = fmt.Sprintf("⚠️ Роль с ID %s не найдена", rnf.RoleID)
+		case errdefs.ErrRoleAddFailed:
+			result = "❗Ошибка при добавлении роли, подробнее в логах"
+		case errdefs.ErrNoWarnsToRemove:
+			result = fmt.Sprintf("ℹ️ У %s нет предупреждений", target.DisplayName())
+		case nil:
+			switch removeWarnResult.Status {
+			case WarnDecreased:
+				result = fmt.Sprintf("✅ %s: уровень предупреждения снижен до %s", target.DisplayName(), removeWarnResult.Role)
+			case WarnRemoved:
+				result = fmt.Sprintf("✅ %s: все предупреждения сняты (удалена роль %s)", target.DisplayName(), removeWarnResult.Role)
+			default:
+				result = "❗Получен неизвестный код успешного выполнения от removewarn"
+			}
+		default:
+			log.Println("Произошла неизвестная ошибка при исполнении removewarn", err)
+			result = "❗Произошла неизвестная ошибка при исполнении removewarn"
+		}
 	}
 
 	// Ответ пользователю
