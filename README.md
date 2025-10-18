@@ -13,3 +13,4 @@ docker run --rm svc-discord:latest
 - WARN_LEVELS - через запятую ID ролей для варнов
 - WARN_ACCESS_ROLES - через запятую ID ролей которым доступен варн
 - GUILD_ID - айди дискорд сервера на котором бот будет работать
+- IS_PROD - запускаем ли gin в тест режиме или в прод (boolean) 

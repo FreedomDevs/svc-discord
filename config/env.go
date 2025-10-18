@@ -1,6 +1,9 @@
 package config
 
-import "os"
+import (
+	"os"
+	"strconv"
+)
 
 func getEnvOrDefault(key string, defaultValue string) string {
 	value := os.Getenv(key)
@@ -16,5 +19,12 @@ func getEnvOrPanic(key string) string {
 		panic("Токен дискорд бота не указан")
 	}
 	return value
+}
 
+func parseBoolSafe(s string) bool {
+	b, err := strconv.ParseBool(s)
+	if err != nil {
+		return false
+	}
+	return b
 }

@@ -6,6 +6,7 @@ var discordBotToken string
 var guildID string
 var warnLevels []string
 var warnAccessRoles []string
+var isProd bool
 
 func GetDiscordBotToken() string {
 	return discordBotToken
@@ -19,6 +20,9 @@ func GetWarnLevels() []string {
 func GetWarnAccessRoles() []string {
 	return warnAccessRoles
 }
+func GetIsProd() bool {
+	return isProd
+}
 
 func LoadEnvVars() {
 	discordBotToken = "Bot " + getEnvOrPanic("DISCORD_BOT_TOKEN")
@@ -29,4 +33,6 @@ func LoadEnvVars() {
 
 	exampleAccessRoles := "1274669048902193186,1391097009032794183,1274668939519070259,1274669011384143873"
 	warnAccessRoles = strings.Split(getEnvOrDefault("WARN_ACCESS_ROLES", exampleAccessRoles), ",")
+
+	isProd = parseBoolSafe(getEnvOrDefault("IS_PROD", "false"))
 }
