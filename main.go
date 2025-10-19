@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/signal"
 	"svc-discord/config"
+	"svc-discord/server"
 	"svc-discord/utils"
 	"svc-discord/warns"
 	"syscall"
@@ -37,6 +38,14 @@ func main() {
 	utils.ClearAllCommands(session)
 
 	go warns.Register(session)
+
+	r := server.Init()
+
+	go func() {
+		if err := r.Run(":9004"); err != nil {
+			log.Fatalf("Ошибка запуска HTTP сервера: %v", err)
+		}
+	}()
 
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
