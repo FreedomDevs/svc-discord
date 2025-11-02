@@ -39,7 +39,7 @@ func main() {
 
 	go warns.Register(session)
 
-	r := server.Init()
+	r := server.Init(session)
 
 	go func() {
 		if err := r.Run(":9004"); err != nil {
