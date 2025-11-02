@@ -17,3 +17,4 @@ docker run --rm svc-discord:latest
 - VOICE_CREATE_CHANNEL_ID - айди войса который типо автовойс который другие войсы
 - AUTOVOICE_CATEGORY_ID - айди категории где будут создаватся каналы
 - CHANNEL_PREFIX - Префикс у названий комнат (По дефолту "Комната_")
+- ON_JOIN_ROLE - Роль которая выдаётся при заходе

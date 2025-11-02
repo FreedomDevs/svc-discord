@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"svc-discord/autorole"
 	"svc-discord/autovoice"
 	"svc-discord/config"
 	"svc-discord/server"
@@ -23,6 +24,8 @@ func main() {
 		log.Fatalln("Неверный токен:", err)
 	}
 
+	session.Identify.Intents = discordgo.IntentsGuildMembers
+
 	user, err := session.User("@me")
 	if err != nil {
 		log.Fatalln("Ошибка при проверке токена:", err)
@@ -40,6 +43,7 @@ func main() {
 
 	go warns.Register(session)
 	go autovoice.Register(session)
+	go autorole.Register(session)
 
 	r := server.Init(session)
 

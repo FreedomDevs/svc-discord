@@ -10,6 +10,7 @@ var isProd bool
 var voiceCreateChannelID string
 var autoVoiceCategoryID string
 var channelPrefix string
+var onJoinRole string
 
 func GetDiscordBotToken() string {
 	return discordBotToken
@@ -35,6 +36,9 @@ func GetAutoVoiceCategoryID() string {
 func GetChannelPrefix() string {
 	return channelPrefix
 }
+func GetOnJoinRole() string {
+	return onJoinRole
+}
 
 func LoadEnvVars() {
 	discordBotToken = "Bot " + getEnvOrPanic("DISCORD_BOT_TOKEN")
@@ -51,4 +55,5 @@ func LoadEnvVars() {
 	voiceCreateChannelID = getEnvOrDefault("VOICE_CREATE_CHANNEL_ID", "1434602345634988203")
 	autoVoiceCategoryID = getEnvOrDefault("AUTOVOICE_CATEGORY_ID", "1423623885257048156")
 	channelPrefix = getEnvOrDefault("CHANNEL_PREFIX", "Комната_")
+	onJoinRole = getEnvOrDefault("ON_JOIN_ROLE", "1434613970194530538")
 }
