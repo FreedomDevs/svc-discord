@@ -105,7 +105,7 @@ func onInteractionCreate(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			case WarnDecreased:
 				result = fmt.Sprintf("✅ %s: уровень предупреждения снижен до %s", target.DisplayName(), removeWarnResult.Role)
 			case WarnRemoved:
-				result = fmt.Sprintf("✅ %s: все предупреждения сняты (удалена роль %s)", target.DisplayName(), removeWarnResult.Role)
+				result = fmt.Sprintf("✅ %s: все предупреждения сняты", target.DisplayName())
 			default:
 				result = "❗Получен неизвестный код успешного выполнения от removewarn"
 			}
