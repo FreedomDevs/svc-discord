@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"svc-discord/autovoice"
 	"svc-discord/config"
 	"svc-discord/server"
 	"svc-discord/utils"
@@ -38,6 +39,7 @@ func main() {
 	utils.ClearAllCommands(session)
 
 	go warns.Register(session)
+	go autovoice.Register(session)
 
 	r := server.Init(session)
 

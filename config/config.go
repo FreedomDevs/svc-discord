@@ -7,6 +7,9 @@ var guildID string
 var warnLevels []string
 var warnAccessRoles []string
 var isProd bool
+var voiceCreateChannelID string
+var autoVoiceCategoryID string
+var channelPrefix string
 
 func GetDiscordBotToken() string {
 	return discordBotToken
@@ -23,6 +26,15 @@ func GetWarnAccessRoles() []string {
 func GetIsProd() bool {
 	return isProd
 }
+func GetVoiceCreateChannelID() string {
+	return voiceCreateChannelID
+}
+func GetAutoVoiceCategoryID() string {
+	return autoVoiceCategoryID
+}
+func GetChannelPrefix() string {
+	return channelPrefix
+}
 
 func LoadEnvVars() {
 	discordBotToken = "Bot " + getEnvOrPanic("DISCORD_BOT_TOKEN")
@@ -35,4 +47,8 @@ func LoadEnvVars() {
 	warnAccessRoles = strings.Split(getEnvOrDefault("WARN_ACCESS_ROLES", exampleAccessRoles), ",")
 
 	isProd = parseBoolSafe(getEnvOrDefault("IS_PROD", "false"))
+
+	voiceCreateChannelID = getEnvOrDefault("VOICE_CREATE_CHANNEL_ID", "1434602345634988203")
+	autoVoiceCategoryID = getEnvOrDefault("AUTOVOICE_CATEGORY_ID", "1423623885257048156")
+	channelPrefix = getEnvOrDefault("CHANNEL_PREFIX", "Комната_")
 }
