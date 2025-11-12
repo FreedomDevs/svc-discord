@@ -24,7 +24,7 @@ func main() {
 		log.Fatalln("Неверный токен:", err)
 	}
 
-	session.Identify.Intents = discordgo.IntentsGuildMembers
+	session.Identify.Intents = discordgo.IntentsGuildMembers | discordgo.IntentsGuildVoiceStates
 
 	user, err := session.User("@me")
 	if err != nil {
