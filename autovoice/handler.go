@@ -14,7 +14,7 @@ func onVoiceStateUpdate(s *discordgo.Session, v *discordgo.VoiceStateUpdate) {
 		return
 	}
 
-	if v.BeforeUpdate != nil {
+	if v.BeforeUpdate != nil && v.BeforeUpdate.ChannelID != v.ChannelID {
 		channel, err := s.Channel(v.BeforeUpdate.ChannelID)
 		if err != nil {
 			log.Printf("Ошибка при обработке ивента войса: %s", err.Error())
