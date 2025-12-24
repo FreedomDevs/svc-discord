@@ -2,21 +2,25 @@ package endpoints
 
 import (
 	"svc-discord/config"
+	"svc-discord/server/response"
+	"svc-discord/server/response/codes"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gin-gonic/gin"
 )
 
-func GetUsersCount(c *gin.Context) {
+func GetUsersCountHandler(c *gin.Context) {
 	session := c.MustGet("discord").(*discordgo.Session)
 
 	guild, err := session.GuildWithCounts(config.GetGuildID())
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+		response.SendErrorResponse(codes.ErrInternalError(err), nil, c)
+		return
 	}
 	if guild == nil {
-		c.JSON(500, gin.H{"error": "guild_is_nil"})
+		response.SendErrorResponse(codes.ErrGuildIsNull, nil, c)
+		return
 	}
 
-	c.JSON(200, gin.H{"status": "ok", "count_members": guild.ApproximateMemberCount})
+	response.SendSuccessResponse(codes.SuccessUsersCountOK, gin.H{"count_members": guild.ApproximateMemberCount}, c)
 }

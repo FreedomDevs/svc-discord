@@ -24,7 +24,8 @@ func Init(session *discordgo.Session) *gin.Engine {
 
 	r.SetTrustedProxies([]string{"127.0.0.1", "172.16.0.0/12"})
 
-	r.GET("/count_members", endpoints.GetUsersCount)
+	r.GET("/count_members", endpoints.GetUsersCountHandler)
+	r.GET("/live", endpoints.LiveHandler)
 
 	return r
 }
