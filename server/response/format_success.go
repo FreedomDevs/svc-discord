@@ -7,8 +7,8 @@ import (
 )
 
 func SendSuccessResponse(code SuccessResponseCode, data any, c *gin.Context) {
-	traceID := c.Request.Header.Get("traceId")
-	c.Header("traceId", traceID)
+	traceID := c.Request.Header.Get("X-Trace-Id")
+	c.Header("X-Trace-Id", traceID)
 	c.JSON(code.Status, gin.H{
 		"data":    data,
 		"message": code.Message,

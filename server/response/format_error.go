@@ -7,8 +7,8 @@ import (
 )
 
 func SendErrorResponse(code ErrorResponseCode, details any, c *gin.Context) {
-	traceID := c.Request.Header.Get("traceId")
-	c.Header("traceId", traceID)
+	traceID := c.Request.Header.Get("X-Trace-Id")
+	c.Header("X-Trace-Id", traceID)
 	c.JSON(code.Status, gin.H{
 		"error": gin.H{
 			"message": code.Message,
