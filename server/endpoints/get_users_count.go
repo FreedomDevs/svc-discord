@@ -2,9 +2,9 @@ package endpoints
 
 import (
 	"svc-discord/config"
-	"svc-discord/server/response"
-	"svc-discord/server/response/codes"
+	"svc-discord/server/codes"
 
+	"github.com/FreedomDevs/svcLibs/go/svcLibs"
 	"github.com/bwmarrin/discordgo"
 	"github.com/gin-gonic/gin"
 )
@@ -14,13 +14,13 @@ func GetUsersCountHandler(c *gin.Context) {
 
 	guild, err := session.GuildWithCounts(config.GetGuildID())
 	if err != nil {
-		response.SendErrorResponse(codes.ErrInternalError(err), nil, c)
+		svcLibs.SendErrorResponse(svcLibs.ErrInternalError(err), c)
 		return
 	}
 	if guild == nil {
-		response.SendErrorResponse(codes.ErrGuildIsNull, nil, c)
+		svcLibs.SendErrorResponse(codes.ErrGuildIsNull, c)
 		return
 	}
 
-	response.SendSuccessResponse(codes.SuccessUsersCountOK, gin.H{"count_members": guild.ApproximateMemberCount}, c)
+	svcLibs.SendSuccessResponse(codes.SuccessUsersCountOK, gin.H{"count_members": guild.ApproximateMemberCount}, c)
 }

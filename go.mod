@@ -1,6 +1,6 @@
 module svc-discord
 
-go 1.25.0
+go 1.26.0
 
 require (
 	github.com/bwmarrin/discordgo v0.29.0
@@ -8,6 +8,7 @@ require (
 )
 
 require (
+	github.com/FreedomDevs/svcLibs/go/svcLibs v0.0.0-20260717180803-4a16e45dcce6 // indirect
 	github.com/bytedance/sonic v1.14.0 // indirect
 	github.com/bytedance/sonic/loader v0.3.0 // indirect
 	github.com/cloudwego/base64x v0.1.6 // indirect
